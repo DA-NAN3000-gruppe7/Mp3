@@ -2,4 +2,17 @@
 Filer for Mp3
 
 
-Todo: legge til dokumentasjon
+## Oppgave
+- Kommer
+
+## Generelt om oppsett og utførelse
+- Kommer
+
+## REST API
+- Kommer
+
+## WEBGRENSESNITT
+- Kommer
+
+## Oppsummering
+- Kommer
