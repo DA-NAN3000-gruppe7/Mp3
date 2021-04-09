@@ -26,7 +26,7 @@ g7alpine2: Webgrensesnitt (basert på docker-image g7alpineimage)
 ## Webgrensesnitt
 - Kommer
 
-# Installering og oppsett for å kjøre
+## Installering og oppsett for å kjøre
 - Instruksjon kommer
 
 ## Merknader
