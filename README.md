@@ -84,10 +84,17 @@ Nettverk 1:
 
 
 ## Webgrensesnitt
-- Kommer
+- Grensesnittet ligger i fila /cgi-bin/editor.sh. Når denne kjøres vises først et grensesnitt med det man kan gjøre. Når man utfører en handling vil scriptet kalle seg selv med input-data, og utføre kall mot RESTapiet, som returnerer respons i nettleseren.
 
 ## Installering og oppsett for å kjøre
-- Instruksjon kommer
+- Laste ned docker-image
+- Opprette 2 containere basert på docker-image og sette opp porter
+- Sette begrensninger på docker-containerne
+- Kjøre igang mp2-serveren
+- Starte containerne
+- Kjøre http://172.17.0.2:8080/cgi-bin/editor.sh (g7alpine2-container) i nettleser
+
+    Fullstending detaljert oppskrift kommer
 
 ## Merknader
 - Kommer
