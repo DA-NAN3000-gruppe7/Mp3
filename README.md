@@ -26,16 +26,61 @@ Nettverk 1:
 
 #### Hente alle dikt:
     url: /localhost:8000/cgi-bin/rest.py/diktsamling/dikt/
+    method: get
     data: ""
+    header: Content-Type: application/xml, Accept:application/xml
     respons: xml med alle dikt
     <diktsamling><dikt><diktID></diktID><dikt></dikt><epostadresse></epostadresse></dikt></diktsamling>
 
 #### Hente et enkelt dikt:
     url: /localhost:8000/cgi-bin/rest.py/diktsamling/dikt/id
+    method: get
     data: ""
+    header: Content-Type: application/xml, Accept:application/xml
     respons: xml med et enkelt dikt
     <diktsamling><dikt><diktID></diktID><dikt></dikt><epostadresse></epostadresse></dikt></diktsamling>
 
+#### Slette et enkelt dikt:
+    url: /localhost:8000/cgi-bin/rest.py/diktsamling/dikt/id
+    method: delete
+    data: ""
+    header: Content-Type: application/xml, Accept:application/xml
+    respons: <result><status></status><statustext><statustext><data></data></result>
+
+#### Slette alle dikt for innlogget bruker:
+    url: /localhost:8000/cgi-bin/rest.py/diktsamling/dikt/
+    method: delete
+    data: ""
+    header: Content-Type: application/xml, Accept:application/xml
+    respons: <result><status></status><statustext><statustext><data></data></result>
+
+#### Opprette nytt dikt:
+    url: /localhost:8000/cgi-bin/rest.py/diktsamling/dikt/
+    method: post
+    data: "<dikt><text></text></dikt>"
+    header: Content-Type: application/xml, Accept:application/xml
+    cookie: user_session=sessionkey (må hentes ved login)
+    respons: <result><status></status><statustext><statustext><data></data></result>
+
+#### Endre dikt:
+    url: /localhost:8000/cgi-bin/rest.py/diktsamling/dikt/id
+    method: put
+    data: "<dikt><text></text></dikt>"
+    header: Content-Type: application/xml, Accept:application/xml
+    cookie: user_session=sessionkey (må hentes ved login)
+    respons: <result><status></status><statustext><statustext><data></data></result>
+
+#### Login:
+    url: /localhost:8000/cgi-bin/rest.py/login
+    Mer kommer
+
+#### Logout:
+    url: /localhost:8000/cgi-bin/rest.py/logout
+    Mer kommer
+
+#### Sjekke login-status:
+    url: /localhost:8000/cgi-bin/rest.py/loginstatus
+    Mer kommer
 
 
 ## Webgrensesnitt
