@@ -11,7 +11,7 @@ import secrets
 
 # Printing headers for xml
 print('Content-type:text/xml\n')
-print('<?xml version="1.0"?>\n')
+print('<?xml version="1.0"?>')
 
 # Connecting to db
 conn = sqlite3.connect('db1')
@@ -66,11 +66,11 @@ if reqMethod == "POST":
                         conn.commit()
 
                         # Sende status tilbake fra REST api
-                        print("<result>\n<status>1</status>\n<statustext>Bruker logget inn: " + userIn + "</statustext>\n<sessionid>" + new_session_id + "</sessionid>\n</result>") # Respons i xml-format
+                        print("<result><status>1</status><statustext>Bruker logget inn: " + userIn + "</statustext><sessionid>" + new_session_id + "</sessionid><data></data></result>") # Respons i xml-format
                 else:
                         # Fail
                         # Sende status tilbake fra REST api
-                        print("<result>\n<status>0</status>\n<statustext>Logg inn failed</statustext>\n<sessionid></sessionid>\n</result>") # Respons i xml-format
+                        print("<result><status>0</status><statustext>Logg inn failed</statustext><sessionid></sessionid><data></data></result>") # Respons i xml-format
 
         elif(parts[1] == "logout"):
                 # Slette sesjon
@@ -87,7 +87,7 @@ if reqMethod == "POST":
                 conn.execute(sql_delete_query)
                 conn.commit()
 
-                print("<result>\n<status>1</status>\n<statustext>Logg ut success</statustext>\n<sessionid>" + session_id_to_logout + "</sessionid>\n</result>") # Respons i xml-format
+                print("<result><status>1</status><statustext>Logg ut success</statustext><sessionid>" + session_id_to_logout + "</sessionid><data></data></result>") # Respons i xml-format
 
         # Sjekker om bruker er logget inn, dvs har en aktiv sesjon i databasen
         elif(parts[1] == "loginstatus"):
@@ -108,14 +108,14 @@ if reqMethod == "POST":
 
                 if records is None:
                         # Ingen bruker har aktiv sesjon
-                        print("<result>\n<status>0</status>\n<statustext>Bruker ikke logget inn</statustext>\n<sessionid>" + session_id_to_check + "</sessionid>\n<user></user>\n</result>") # Respons i xml-format
+                        print("<result><status>0</status><statustext>Bruker ikke logget inn</statustext><sessionid>" + session_id_to_check + "</sessionid><user></user><data></data></result>") # Respons i xml-format
                 else:
                         # Det finnes en aktiv sesjon
                         emailIn = ""
                         for row in records:
                             emailIn = row[1] # Henter epostadresse
                         
-                        print("<result>\n<status>1</status>\n<statustext>Bruker er logget inn</statustext>\n<sessionid>" + session_id_to_check + "</sessionid>\n<user>" + emailIn + "</user>\n</result>") # Respons i xml-format
+                        print("<result><status>1</status><statustext>Bruker er logget inn</statustext><sessionid>" + session_id_to_check + "</sessionid><user>" + emailIn + "</user><data></data></result>") # Respons i xml-format
 
 
         # Hvis ikke "login"
@@ -149,7 +149,7 @@ if reqMethod == "POST":
 
                 if records1 is None:
                     # Ingen bruker har aktiv sesjon
-                    print("<result>\n<status>0</status>\n<statustext>Bruker ikke logget inn</statustext>\n<sessionid></sessionid>\n</result>") # Respons i xml-format
+                    print("<result><status>0</status><statustext>Bruker ikke logget inn</statustext><sessionid></sessionid><data></data></result>") # Respons i xml-format
                 else:
                     # Det finnes en aktiv sesjon
                     emailIn = ""
@@ -160,19 +160,20 @@ if reqMethod == "POST":
                     sql_string = "INSERT INTO Dikt (dikt,epostadresse) VALUES ('" + textIn + "', '" + emailIn + "')"
                     conn.execute(sql_string)
                     conn.commit()
-                    print("<result>\n<status>1</status>\n<statustext>Success post with content " + textIn + "</statustext>\n</result>") # Respons i xml-format
+                    print("<result><status>1</status><statustext>Success post with content " + textIn + "</statustext><data></data></result>") # Respons i xml-format
 
 # GET: Henter dikt fra databasen
 if reqMethod == "GET":
         myPathSelf = os.environ.get('PATH_INFO') # Get the path
         #myPathSelf = "/diktsamling/dikt/6" # !TESTDATA!
         parts = myPathSelf.split("/")
-        #print("DiktId: \n", parts[3])
+        
         if(parts[3] != ""):
             cursor = conn.execute("SELECT * FROM Dikt WHERE diktId = ?", (parts[3],))
             records = cursor.fetchall()
             for row in records:
-                outstring = "<diktbase>\n<diktID>" + str(row[0]) + "</diktID>\n<dikt>" + row[1] + "</dikt>\n<epostadresse>" + row[2] + "</epostadresse>\n</diktbase>"
+                outstring = "<diktbase><diktID>" + str(row[0]) + "</diktID><dikt>" + row[1] + "</dikt><epostadresse>" + row[2] + "</epostadresse></diktbase>"
+            print('<!DOCTYPE note SYSTEM "diktsamling.dtd">')
             print(outstring)
             cursor.close()
         else:
@@ -183,9 +184,9 @@ if reqMethod == "GET":
             # Writing xml to respons
             outstring = "<diktbase>"
             for row in records:
-                outstring += "\n<dikt>\n<diktID>" + str(row[0]) + "</diktID>\n<dikttekst>" + row[1] + "</dikttekst>\n<epostadresse>" + row[2] + "</epostadresse>\n</dikt>"
-            outstring += "\n</diktbase>"
-            print('<!DOCTYPE note SYSTEM "diktsamling.dtd">\n')
+                outstring += "<dikt><diktID>" + str(row[0]) + "</diktID><dikt>" + row[1] + "</dikt><epostadresse>" + row[2] + "</epostadresse></dikt>"
+            outstring += "</diktbase>"
+            print('<!DOCTYPE note SYSTEM "diktsamling.dtd">')
             print(outstring)
             cursor.close()
 # End GET ----
@@ -200,8 +201,8 @@ if reqMethod == "DELETE":
                 sql_delete_query = "DELETE FROM Dikt WHERE diktID = " + str(diktIdIn)
                 conn.execute(sql_delete_query)
                 conn.commit()
-            
-                print("<result>\n<status>1</status>\n<statustext>Success delete a dikt from db</statustext>\n</result>") # Respons i xml-format
+
+                print("<result><status>1</status><statustext>Success delete a dikt from db</statustext><data></data></result>") # Respons i xml-format
         
         else: # Hvis ikke id er angitt, slette alle diktene til brukeren
             userEmail = ""
@@ -223,7 +224,7 @@ if reqMethod == "DELETE":
             
             if records is None:
                 # Ingen bruker har aktiv sesjon
-                print("<result>\n<status>0</status>\n<statustext>Delete all not possible - no user logged in</statustext>\n</result>") # Respons i xml-format
+                print("<result><status>0</status><statustext>Delete all not possible - no user logged in</statustext><data></data></result>") # Respons i xml-format
             
             else:
 
@@ -234,7 +235,7 @@ if reqMethod == "DELETE":
                 sql_delete_all_query = "DELETE FROM Dikt WHERE epostadresse = '" + str(userEmail) + "'"
                 conn.execute(sql_delete_all_query)
                 conn.commit()
-                print("<result>\n<status>1</status>\n<statustext>Success delete all</statustext>\n</result>") # Respons i xml-format
+                print("<result><status>1</status><statustext>Success delete all</statustext><data></data></result>") # Respons i xml-format
         
 # PUT: Skal oppdatere eksisterende dikt med ny tekst - kun egne dikt
 if reqMethod == "PUT":
@@ -270,12 +271,12 @@ if reqMethod == "PUT":
         
         if records is None:
             # Ingen bruker har aktiv sesjon
-            print("<result>\n<status>0</status>\n<statustext>Updating dikt failed - no user logged in</statustext>\n</result>") # Respons i xml-format
+            print("<result><status>0</status><statustext>Updating dikt failed - no user logged in</statustext><data></data></result>") # Respons i xml-format
         else:
             if(idIn != ""):
                 sql_update_query = "UPDATE Dikt SET dikt =  '" + textIn + "' WHERE diktID = '" + idIn + "'"
                 conn.execute(sql_update_query)
                 conn.commit()
-                print("<result>\n<status>1</status>\n<statustext>Success put</statustext>\n</result>") # Respons i xml-format
+                print("<result><status>1</status><statustext>Success put</statustext><data></data></result>") # Respons i xml-format
 # Closing db-connection
 conn.close()
