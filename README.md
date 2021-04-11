@@ -87,14 +87,16 @@ Nettverk 1:
 - Grensesnittet ligger i fila /cgi-bin/editor.sh. Når denne kjøres vises først et grensesnitt med det man kan gjøre. Når man utfører en handling vil scriptet kalle seg selv med input-data, og utføre kall mot RESTapiet, som returnerer respons i nettleseren.
 
 ## Installering og oppsett for å kjøre
-- Laste ned docker-image
+- Installer docker på maskinen hvis det ikke er gjort allerede
+- Logg inn med din docker-id
+- Last ned docker-image for mp3: hkulterud/dockerhub:g7mp3_image
 - Opprette 2 containere basert på docker-image og sette opp porter
 - Sette begrensninger på docker-containerne
 - Kjøre igang mp2-serveren
 - Starte containerne
 - Kjøre http://172.17.0.2:8080/cgi-bin/editor.sh (g7alpine2-container) i nettleser
 
-    Fullstending detaljert oppskrift kommer
+    Fullstending detaljert oppskrift og kommandoer som skal kjøres
 
 ## Merknader
 - Kommer
