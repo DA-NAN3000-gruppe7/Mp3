@@ -107,4 +107,10 @@ Oppsettet består av følgende deler:
     Fullstending detaljert oppskrift og kommandoer som skal kjøres
 
 ## Merknader
-- Kommer
+### CGROUPS
+Vi setter begrensning på minnebruk slik:
+$sudo docker -m 500m --memory-swap -1 g7alpine1 (setter grense på 500MB)
+    Sjekk stats med følgende kommando:
+    $sudo docker stats --no-stream
+
+### CAPABILITIES
