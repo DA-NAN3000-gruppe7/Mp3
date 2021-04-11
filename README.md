@@ -2,7 +2,16 @@
 Del 3 av prosjekt
 
 ## Oppgave
-- Kommer
+Sett opp et REST-api mot en sqlite-database og en editor som kan utføre følgende handlinger mot rest-apiet:
+- Logge inn og ut bruker
+- Hente alle dikt
+- Hente et enkelt dikt
+- Slette et enkelt dikt
+- Slette alle brukerens dikt
+- Endre et dikt
+- Legge til et dikt
+
+Editor og REST-api skal kjøre i to forskjellige docker-containere som er på samme nettverk. Disse to containerne skal ha visse begrensninger (namespaces, cgroups og capabilities). Statiske filer til editoren skal hentes fra MP2-serveren, som ligger på vertsnettverket. Alt skal kunne kjøres i nettleser/klient i samme nettverk som MP2-serveren.
 
 ## Generelt om oppsett og utførelse
 Oppsettet består av følgende deler:
