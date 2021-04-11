@@ -4,6 +4,6 @@
 <!ELEMENT diktbase (dikt+)>
 <!ELEMENT dikt (diktID,dikttekst,epostadresse)>
 <!ELEMENT diktid (#PCDATA)>
-<!ELEMENT dikttekst (#PCDATA)>
+<!ELEMENT dikt (#PCDATA)>
 <!ELEMENT epostadresse (#PCDATA)>
 ]>
