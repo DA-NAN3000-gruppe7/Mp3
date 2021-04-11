@@ -115,3 +115,16 @@ Oppsettet består av følgende deler:
         $sudo docker stats --no-stream
 
 ### CAPABILITIES
+        Her kan tilgjengelige egenskaper fjernes og legges til, slik at man inni containeren får mer eller mindre funksjonalitet. Dette kan sjekkes med følgende kommandoer:
+
+        sudo docker inspect --format='{{.HostConfig.CapAdd}}' g7alpine1
+
+        sudo docker inspect --format='{{.HostConfig.CapDrop}}' g7alpine1
+
+        For å legge til eller fjerne: Kan bare gjøres når man oppretter containeren, ikke senere.
+
+### NAMESPACES
+        For å gi root-brukeren i containeren mindre tilgang til vertssystemet/host, kan man mappe root i containeren til en annen bruker enn root i vertssystemet. Da vil root i containeren ikke ha tilgang til vertssystemet hvis noen skulle ta kontroll over brukeren i containeren.
+
+        Dette gjøres slik:
+
