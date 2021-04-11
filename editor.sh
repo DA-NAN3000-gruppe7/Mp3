@@ -146,7 +146,8 @@ echo '<html>'
 echo '<head>'
 echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
 echo '<title>Gruppe 7 - dikteditor</title>'
-echo '<style>p { margin-top: 0px; } input[type=text] { padding: 6px; } input[type=password] { padding: 6px; } input[type=submit] { padding: 8px; color: #fff; border: 0px; border-radius: 3px; background-color: #339DFF; } form { padding:0;margin:0; } body { font-family: arial; } label { font-size: 12px; display: block; margin-top: 15px; margin-bottom: 5px; } .form-div { margin: 15px; border-radius: 5px; border: 2px solid #ccc; padding: 30px; } .status-field { border: 2px solid #ccc; background-color: #fff9db; padding: 30px; border-radius: 5px; margin: 15px;  }</style>'
+#echo '<style>p { margin-top: 0px; } input[type=text] { padding: 6px; } input[type=password] { padding: 6px; } input[type=submit] { padding: 8px; color: #fff; border: 0px; border-radius: 3px; background-color: #339DFF; } form { padding:0;margin:0; } body { font-family: arial; } label { font-size: 12px; display: block; margin-top: 15px; margin-bottom: 5px; } .form-div { margin: 15px; border-radius: 5px; border: 2px solid #ccc; padding: 30px; } .status-field { border: 2px solid #ccc; background-color: #fff9db; padding: 30px; border-radius: 5px; margin: 15px;  }</style>'
+echo '<link rel="stylesheet" href="http://localhost:80/css/mp3style.css" />'
 echo '</head>'
 echo '<body>'
 
@@ -263,8 +264,8 @@ fi
 
 
 # Writing status field
-echo '<h1>Gruppe 7 - dikteditor -</h1>'
-echo '<a href="">Gå til gruppas nettside</a>'
+echo '<h1>Gruppe 7 - dikteditor - v1.3</h1>'
+echo '<a href="http://localhost:80/index.html">Gå til gruppas nettside</a>'
 echo '<div class="status-field">'
 echo Debug: $debugtext
 echo '</div>' # End status text field
@@ -392,47 +393,5 @@ echo '</div>' # End forms div
 # Writing last part of html
 echo '</body>'
 echo '</html>'
-
-
-
-
-
-
-
-# Writing testdata
-#echo Cookieverdi: $current_cookie_id_value
-#echo Todo: $todo
-#echo ""
-#echo D: $allInData
-
-#curl --write-out "%{http_code}\n" "http://172.17.0.2/cgi-bin/testpython.py/diktbase/dikt/1"
-#curl --write-out "%{http_code}\n" POST "http://172.17.0.2/cgi-bin/testpython.py/login/login"
-#resp=$(curl "<diktbase><dikt>1</dikt><text>Skrønebok</text></diktbase>" -X GET http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/1)
-#echo RESPONS: $resp
-#echo 'Hello Worldscaaa'
-#echo REQUEST_METHOD: $reqMethod
-#echo QUERYSTRING: $queryString
-#echo "<br/><br/>"
-
-# Parsing input user info from form ----
-#IN=$form
-#arrayPairs=(${IN//&/ })
-#INUSER=${arrayPairs[1]}
-#INPASS=${arrayPairs[2]}
-#username_value=(${INUSER//=/ })
-#password_value=(${INPASS//=/ })
-#username=${username_value[1]} # Username variable
-#password=${password_value[1]} # Password variable
-# end ----
-
-#echo "BRUKERNAVN: " $username
-#echo "- PASSORD: " $password
-#echo "<br/><br/>"
-
-#echo "XML:<br/>"
-#xml_string="<diktbase><dikt>Dette er diktet</dikt></diktbase>"
-#TD=$(xmllint --xpath "//dikt" - <<<"$xml_string")
-#echo $TD
-
 
 exit 0
