@@ -18,7 +18,7 @@ Oppsettet består av følgende deler:
 
 ### Nettverk 1:
     Server fra Mp2
-    Klient på vertsmaskin
+    Klient på vertsmaskin (nettleser for å vise editor)
 
 ### Nettverk 2: Docker-nettverk
     g7alpine1: Webservice (basert på docker-image g7alpineimage)
