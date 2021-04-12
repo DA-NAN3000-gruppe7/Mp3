@@ -164,6 +164,7 @@ Oppsettet består av følgende deler:
 
     1. Stop docker: $sudo systemctl stop docker
     2. Start med Namespaces tilgengelig: $sudo dockerd --userns-remap=default &
+    
     Dette starter docker med dockermap user og group opprettes og mappes mot ikke-priviligerte uid og gid - "ranges" i /etc/subuid og /etc/subgid - filene.
 
     Sjekk at bruker-navnerommet er riktig:
