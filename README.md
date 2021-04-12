@@ -112,7 +112,7 @@ Oppsettet består av følgende deler:
 - Logg inn med din docker-id
 - Last ned docker-image for mp3: hkulterud/dockerhub:g7mp3_image
     - $sudo docker run -d --cap-drop=setfcap --cpu-shares 512 -m 512m -it -p 8080:80 --name g7alpine2 hkulterud/dockerhub:g7mp3_image
-    - Dette kallet vil opprette container med navn "g7alpine2", lytter på port 8080 på vert (rutes til port 80 i container), dropper setfcap-capability (krav i mp3). Her begrenses også minne-bruk til 512MB og 512 cpu-shares (capabilities-krav i mp3)
+    - Dette kallet vil opprette container med navn "g7alpine2", lytter på port 8080 på vert (rutes til port 80 i container), dropper setfcap-capability (krav i mp3). Her begrenses også minne-bruk til 512MB og 512 cpu-shares (capabilities-krav i mp3). CPU-share er en relativ verdi. Hvis totalt antall shares er 2048, vil 512 cpu-shares gi 50% tid av cpu.
 - Opprette 2 containere basert på docker-image og sette opp porter
 - Sette begrensninger på docker-containerne
 - Kjøre igang mp2-serveren
