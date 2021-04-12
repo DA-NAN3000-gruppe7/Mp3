@@ -144,6 +144,8 @@ Oppsettet består av følgende deler:
 
     For å legge til eller fjerne: Kan bare gjøres når man oppretter containeren, ikke senere.
 
+    Tillegg: kan også default fjerne følgende: audit_write
+
 ### NAMESPACES
     For å gi root-brukeren i containeren mindre tilgang til vertssystemet/host, kan man mappe root i containeren til en annen bruker enn root i vertssystemet. Da vil root i containeren ikke ha tilgang til vertssystemet hvis noen skulle ta kontroll over brukeren i containeren.
 
@@ -164,7 +166,7 @@ Oppsettet består av følgende deler:
 
     1. Stop docker: $sudo systemctl stop docker
     2. Start med Namespaces tilgengelig: $sudo dockerd --userns-remap=default &
-    
+
     Dette starter docker med dockermap user og group opprettes og mappes mot ikke-priviligerte uid og gid - "ranges" i /etc/subuid og /etc/subgid - filene.
 
     Sjekk at bruker-navnerommet er riktig:
