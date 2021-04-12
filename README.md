@@ -98,6 +98,8 @@ Oppsettet består av følgende deler:
 - Installer docker på maskinen hvis det ikke er gjort allerede
 - Logg inn med din docker-id
 - Last ned docker-image for mp3: hkulterud/dockerhub:g7mp3_image
+    - $docker run -d --cap-drop=setfcap -m 512m -it -p 8080:80 --name g7alpine2 hkulterud/dockerhub:g7mp3_image
+    - Dette kallet vil opprette container med navn "g7alpine2", lytter på port 8080 på vert (rutes til port 80 i container), dropper setfcap-capability (krav i mp3). Her begrenses også minne-bruk til 512MB (capabilities-krav i mp3)
 - Opprette 2 containere basert på docker-image og sette opp porter
 - Sette begrensninger på docker-containerne
 - Kjøre igang mp2-serveren
@@ -108,23 +110,58 @@ Oppsettet består av følgende deler:
 
 ## Merknader
 ### CGROUPS
-        Vi setter begrensning på minnebruk slik:
-        $sudo docker -m 500m --memory-swap -1 g7alpine1 (setter grense på 500MB)
-        
-        Sjekk stats med følgende kommando:
-        $sudo docker stats --no-stream
+    Vi setter begrensning på minnebruk slik:
+    $sudo docker -m 500m --memory-swap -1 g7alpine1 (setter grense på 500MB)
+    
+    Sjekk stats med følgende kommando:
+    $sudo docker stats --no-stream
 
 ### CAPABILITIES
-        Her kan tilgjengelige egenskaper fjernes og legges til, slik at man inni containeren får mer eller mindre funksjonalitet. Dette kan sjekkes med følgende kommandoer:
+    Her kan tilgjengelige egenskaper fjernes og legges til, slik at man inni containeren får mer eller mindre funksjonalitet. Dette kan sjekkes med følgende kommandoer:
 
-        sudo docker inspect --format='{{.HostConfig.CapAdd}}' g7alpine1
+    sudo docker inspect --format='{{.HostConfig.CapAdd}}' g7alpine1
 
-        sudo docker inspect --format='{{.HostConfig.CapDrop}}' g7alpine1
+    sudo docker inspect --format='{{.HostConfig.CapDrop}}' g7alpine1
 
-        For å legge til eller fjerne: Kan bare gjøres når man oppretter containeren, ikke senere.
+    For å legge til eller fjerne: Kan bare gjøres når man oppretter containeren, ikke senere.
 
 ### NAMESPACES
-        For å gi root-brukeren i containeren mindre tilgang til vertssystemet/host, kan man mappe root i containeren til en annen bruker enn root i vertssystemet. Da vil root i containeren ikke ha tilgang til vertssystemet hvis noen skulle ta kontroll over brukeren i containeren.
+    For å gi root-brukeren i containeren mindre tilgang til vertssystemet/host, kan man mappe root i containeren til en annen bruker enn root i vertssystemet. Da vil root i containeren ikke ha tilgang til vertssystemet hvis noen skulle ta kontroll over brukeren i containeren.
 
-        Dette gjøres slik:
+    Før du setter opp namespaces, for å forstå:
+
+    Sjekk at docker kjører som root:
+    $sudo ps aux | grep dockerd
+
+    Docker kjører default som root når man oppretter nye containere.
+
+    Finn din id med følgende kommando: $id
+
+    Kjør deretter container med følgende kommando:
+    $sudo docker run --rm --user 1000:1000 alpine id
+    der 1000 her er din brukers UID og GID
+
+    Responsen uid=1000 gid=1000 viser at du nå kjører med gjeldende bruker, og ikke root. Men mange ganger trenger man å kjøre med root, uten tilgang til vertssystemet. Da brukes Namespaces:
+
+    1. Stop docker: $sudo systemctl stop docker
+    2. Start med Namespaces tilgengelig: $sudo dockerd --userns-remap=default &
+    Dette starter docker med dockermap user og group opprettes og mappes mot ikke-priviligerte uid og gid - "ranges" i /etc/subuid og /etc/subgid - filene.
+
+    Sjekk at bruker-navnerommet er riktig:
+    $docker info
+    Docker Root Dir: /var/lib/docker/165536.165536 viser at det kjøres i et eget navnerom. Det vanlige root-dir er: Docker Root Dir: /var/lib/docker
+
+    Ved å nå kjøre $sudo docker images får du ingen tilgjengelige images, som viser at docker deamon nå kjører i et eget navnerom der ingenting annet er tilgjengelig.
+
+    Vi kan kjøre som root, men denne root-brukeren har da bare tilgang til navnerommet vi nå kjører docker i:
+
+    sudo docker run -it --rm -v /bin:/host/bin busybox /bin/sh
+    Denne mounter /bin til /host/bin
+
+    Kjør $id i containeren, som viser root.
+
+    Prøv å slette noe i /bin (f.eks: $rm host/bin/sh), dette får man ikke lov til, da man ikke har root-tilgang i host.
+
+
+
 
