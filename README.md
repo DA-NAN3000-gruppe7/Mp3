@@ -129,7 +129,10 @@ Oppsettet består av følgende deler:
     Vi setter begrensning på minnebruk slik:
     $sudo docker -m 500m --memory-swap -1 g7alpine1 (setter grense på 500MB)
     
-    Sjekk stats med følgende kommando:
+    Sette antall cpu-shares for container:
+    $sudo docker --cpu-shares 512 --memory-swap -1 g7alpine1 (setter grense på 500MB)
+    
+    Sjekk stats med følgende kommando for å se ressursbruk:
     $sudo docker stats --no-stream
 
 ### CAPABILITIES
