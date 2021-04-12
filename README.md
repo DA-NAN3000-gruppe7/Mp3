@@ -80,15 +80,28 @@ Oppsettet består av følgende deler:
 
 #### Login:
     url: /localhost:8000/cgi-bin/rest.py/login
-    Mer kommer
+    method: post
+    data: <user><username></username><password></password></user>
+    header: Content-Type: application/xml, Accept:application/xml
+    respons: <result><status></status><statustext><statustext><sessionid></sessionid><data></data></result>
 
 #### Logout:
     url: /localhost:8000/cgi-bin/rest.py/logout
-    Mer kommer
+    method: post
+    data: <user><sessionid></sessionid></user>
+    header: Content-Type: application/xml, Accept:application/xml
+    respons: <result><status></status><statustext><statustext><sessionid></sessionid><data></data></result>
+
+    Denne kan måtte endres noe, da session-id bør sendes i cookie
 
 #### Sjekke login-status:
     url: /localhost:8000/cgi-bin/rest.py/loginstatus
-    Mer kommer
+    method: post
+    data: <check><sessionid></sessionid></check>
+    header: Content-Type: application/xml, Accept:application/xml
+    respons: <result><status></status><statustext><statustext><sessionid></sessionid><user></user><data></data></result>
+
+    Denne kan måtte endres noe, da session-id bør sendes i cookie
 
 
 ## Webgrensesnitt
@@ -98,7 +111,7 @@ Oppsettet består av følgende deler:
 - Installer docker på maskinen hvis det ikke er gjort allerede
 - Logg inn med din docker-id
 - Last ned docker-image for mp3: hkulterud/dockerhub:g7mp3_image
-    - $sudo docker run -d --cap-drop=setfcap -m 512m -it -p 8080:80 --name g7alpine2 hkulterud/dockerhub:g7mp3_image
+    - $sudo docker run -d --cap-drop=setfcap -cpu-shares 0.5 -m 512m -it -p 8080:80 --name g7alpine2 hkulterud/dockerhub:g7mp3_image
     - Dette kallet vil opprette container med navn "g7alpine2", lytter på port 8080 på vert (rutes til port 80 i container), dropper setfcap-capability (krav i mp3). Her begrenses også minne-bruk til 512MB (capabilities-krav i mp3)
 - Opprette 2 containere basert på docker-image og sette opp porter
 - Sette begrensninger på docker-containerne
