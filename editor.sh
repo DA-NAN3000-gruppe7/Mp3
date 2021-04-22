@@ -43,7 +43,7 @@ then
     cookie_string="Set-cookie:user_session=0; expires=Wed, 14-Feb-2001 05:53:40 GMT;"
     session_to_logout=$current_cookie_id_value
     url_auth="http://host.docker.internal:8080/cgi-bin/rest.sh/logout"
-    data="<user><sessionid>"$session_to_logout"</sessionid></user>"
+    data="<?xml version='1.0'?><!DOCTYPE result SYSTEM 'http://localhost:80/dtd/user.dtd'><user><sessionid>"$session_to_logout"</sessionid></user>"
     resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url_auth")
     
     STATUSCODE=$(xmllint --xpath "//status/text()" - <<<"$resp") # Parsing xml <status></status>
@@ -82,7 +82,7 @@ then
     
     # Set auth url, data and do curl-request
     url_auth="http://host.docker.internal:8080/cgi-bin/rest.sh/login"
-    data="<user><username>"$usernameDecoded"</username><password>"$password"</password></user>"
+    data="<?xml version='1.0'?><!DOCTYPE result SYSTEM 'http://localhost:80/dtd/user.dtd'><user><username>"$usernameDecoded"</username><password>"$password"</password></user>"
     resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url_auth")
     
     # Status code from xml-respons
@@ -113,7 +113,7 @@ if [[ $current_cookie_id_value != "" ]] && [[ $todo != "logout" ]]; # If cookie-
 then
 
     url_auth_check="http://host.docker.internal:8080/cgi-bin/rest.sh/loginstatus"
-    data_check="<check><sessionid>"$current_cookie_id_value"</sessionid></check>"
+    data_check="<?xml version='1.0'?><!DOCTYPE result SYSTEM 'http://localhost:80/dtd/check.dtd'><check><sessionid>"$current_cookie_id_value"</sessionid></check>"
     resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data_check" "$url_auth_check")
     debugtext+="<br/>Loginstatuss xml: "$resp
     # Status code from xml-respons
@@ -193,7 +193,7 @@ then
     dikttekst=$(urldecode "$dikttekstin") # Decoding string
 
     url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"
-    data="<dikt><text>"$dikttekst"</text></dikt>"
+    data="<?xml version='1.0'?><!DOCTYPE result SYSTEM 'http://localhost:80/dtd/dikt.dtd'><dikt><text>"$dikttekst"</text></dikt>"
     resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url")
 
     debugtext+="<br/>"$resp
@@ -251,7 +251,7 @@ then
     dikt_text=$(urldecode "$dikttekstin") # Decoding string
 
     url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"$dikt_id
-    data="<dikt><text>"$dikt_text"</text></dikt>"
+    data="<?xml version='1.0'?><!DOCTYPE result SYSTEM 'http://localhost:80/dtd/dikt.dtd'><dikt><text>"$dikt_text"</text></dikt>"
     resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X PUT --data "$data" "$url")
 
     debugtext+="<br/>"$resp
