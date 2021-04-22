@@ -31,7 +31,7 @@ reqMethod=$REQUEST_METHOD
 
 function checkLoggedIn() { 
     IFS='=' # Set delimiter
-    read -a parts <<<"$myCookie" # Get cookie-string as array delimeter by "="
+    read -a parts <<<"$HTTP_COOKIE" # Get cookie-string as array delimeter by "="
     sessionIdIn=${parts[1]} # Get the session-id
     #sessionIdIn="ttw13hidhjZkzRW7yQba5Q1" # For testing purposes
 
@@ -44,7 +44,7 @@ function checkLoggedIn() {
     if [[ $numRows>0 ]]; then
         # Session exists
         IFS=$'|' # Set delimiter
-        read -d '' -ra sessionIdInp sessionEmail <<< "$sessionContent"
+        IFS=$'|' read sessionIdInp sessionEmail <<< "$sessionContent"
         currentSessionId=$sessionIdInp # Set user session variable
         currentUserEmail=$sessionEmail # Set user email variable
         isLoggedIn="1"
@@ -88,7 +88,7 @@ if [[ $reqMethod = "DELETE" ]]; then
         # Creating respons body
         outstring='<?xml version="1.0"?>'
         outstring+='<!DOCTYPE result SYSTEM "http://localhost:80/dtd/result.dtd">'
-        outstring+='<result><status>1</status><statustext>All dikt deleted for user: '$HTTP_COOKIE'</statustext></result>'
+        outstring+='<result><status>1</status><statustext>All dikt deleted for user: '$currentUserEmail'- and with cookie: '$HTTP_COOKIE'</statustext></result>'
         
         strlength=${#outstring} # get length of respons body
         
@@ -109,9 +109,10 @@ if [[ $reqMethod = "POST" ]]; then
     IFS='/' # Set delimiter
     read -a parts <<<"$myPathSelf" # Get path as array delimeter by "/"
     IFS='\' # Set delimiter
+
     # Do login
     if [[ ${parts[3]} = "login" ]]; then
-
+    
         doCreateDikt="0"
         
         xmlIn=$BODY
@@ -123,7 +124,7 @@ if [[ $reqMethod = "POST" ]]; then
         numRows=${#rowsOut[@]}
         
         userContent=${rowsOut}
-        
+            
         if [[ $numRows>0 ]]; then
             # User exists
             IFS='|' read uEmail uPassword uFname uLname <<< "$userContent"
@@ -131,22 +132,34 @@ if [[ $reqMethod = "POST" ]]; then
             currentPasswordHashed=$uPassword # Set user password variable
             
             # Get sha256-hash from password input
-            # hashpassword=($(echo -n $password | sha256sum )) # SKAL AKTIVERES
+            hashpassword=$(echo -n $passwordIn | sha256sum | head -c 64) # Hasing input password
 
-            # Generate new session-id
-            new_session_id=$( cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 )
-            # Insert dikt into db
-            sqlite3 "$database_path" "insert into Sesjon (sesjonsID,epostadresse) \
-            values (\"$new_session_id\",\"$currentUserEmail\");"
+            if [[ $hashpassword = $currentPasswordHashed ]]; then # If password match
 
-            # Send response
-            outstring='<?xml version="1.0"?>'
-            outstring+='<!DOCTYPE result SYSTEM "http://localhost:80/dtd/result.dtd">'
-            outstring+="<result><status>1</status><statustext>Bruker logget inn: "$currentUserEmail"</statustext><sessionid>"$new_session_id"</sessionid><user></user></result>" # XML-respons
-            strlength=${#outstring} # get length of respons body
-            echo 'Content-Length: '$strlength # Writing respons header
-            echo "" # Separate header with empty line
-            echo $outstring # Writing respons body
+                # Generate new session-id
+                new_session_id=$( cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 )
+                
+                # Insert dikt into db
+                sqlite3 "$database_path" "insert into Sesjon (sesjonsID,epostadresse) \
+                values (\"$new_session_id\",\"$currentUserEmail\");"
+
+                # Send response
+                outstring='<?xml version="1.0"?>'
+                outstring+='<!DOCTYPE result SYSTEM "http://localhost:80/dtd/result.dtd">'
+                outstring+="<result><status>1</status><statustext>Bruker logget in: -"$hashpassword"--"$currentPasswordHashed"</statustext><sessionid>"$new_session_id"</sessionid><user></user></result>" # XML-respons
+                strlength=${#outstring} # get length of respons body
+                echo 'Content-Length: '$strlength # Writing respons header
+                echo "" # Separate header with empty line
+                echo $outstring # Writing respons body
+            else
+                outstring='<?xml version="1.0"?>'
+                outstring+='<!DOCTYPE result SYSTEM "http://localhost:80/dtd/result.dtd">'
+                outstring+="<result><status>0</status><statustext>Feil bruker eller passord</statustext><sessionid></sessionid><user></user></result>" # XML-respons
+                strlength=${#outstring} # get length of respons body
+                echo 'Content-Length: '$strlength # Writing respons header
+                echo "" # Separate header with empty line
+                echo $outstring # Writing respons body
+            fi
         else
             # User does not exist in db
             outstring='<?xml version="1.0"?>'

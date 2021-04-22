@@ -42,9 +42,9 @@ if [[ $todo = "logout" ]];
 then
     cookie_string="Set-cookie:user_session=0; expires=Wed, 14-Feb-2001 05:53:40 GMT;"
     session_to_logout=$current_cookie_id_value
-    url_auth="http://172.17.0.2/cgi-bin/rest.py/logout"
+    url_auth="http://host.docker.internal:8080/cgi-bin/rest.sh/logout"
     data="<user><sessionid>"$session_to_logout"</sessionid></user>"
-    resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" -X POST --data "$data" "$url_auth")
+    resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url_auth")
     
     STATUSCODE=$(xmllint --xpath "//status/text()" - <<<"$resp") # Parsing xml <status></status>
 
@@ -80,13 +80,10 @@ then
     usernameDecoded=$(urldecode "$username")
     debugtext+="<br/>Username: "$usernameDecoded
     
-    # Get sha256-hash from password input
-    hashpassword=($(echo -n $password | sha256sum ))
-    
     # Set auth url, data and do curl-request
-    url_auth="http://172.17.0.2/cgi-bin/rest.py/login"
-    data="<user><username>"$usernameDecoded"</username><password>"$hashpassword"</password></user>"
-    resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" -X POST --data "$data" "$url_auth")
+    url_auth="http://host.docker.internal:8080/cgi-bin/rest.sh/login"
+    data="<user><username>"$usernameDecoded"</username><password>"$password"</password></user>"
+    resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url_auth")
     
     # Status code from xml-respons
     STATUSCODE=$(xmllint --xpath "//status/text()" - <<<"$resp") # Parsing xml <status></status>
@@ -96,7 +93,7 @@ then
     then
         current_user=$usernameDecoded
         loginstatus="1"
-        debugtext+="<br/>Logget inn vellykket: "$resp
+        debugtext+="<br/>Login respons: "$resp
         cookie_string="Set-cookie:user_session="$NEWSESSIONID
     fi
 
@@ -115,10 +112,10 @@ fi
 if [[ $current_cookie_id_value != "" ]] && [[ $todo != "logout" ]]; # If cookie-value is set and not logging out
 then
 
-    url_auth_check="http://172.17.0.2/cgi-bin/rest.py/loginstatus"
+    url_auth_check="http://host.docker.internal:8080/cgi-bin/rest.sh/loginstatus"
     data_check="<check><sessionid>"$current_cookie_id_value"</sessionid></check>"
-    resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" -X POST --data "$data_check" "$url_auth_check")
-    debugtext+="<br/>Loginstatus xml: "$resp
+    resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data_check" "$url_auth_check")
+    debugtext+="<br/>Loginstatuss xml: "$resp
     # Status code from xml-respons
     STATUSCODE=$(xmllint --xpath "//status/text()" - <<<"$resp") # Parsing xml <status></status>
     USER=$(xmllint --xpath "//user/text()" - <<<"$resp") # Parsing xml <user></user>
@@ -128,15 +125,14 @@ then
 fi
 # End login status check ----------------------------------------------------------
 
+# Writing head
+echo "Content-type: text/html"
 
 # Writing cookie
 if [[ $cookie_string != "" ]]; # If cookie-value is set
 then
     echo $cookie_string
 fi
-
-# Writing head
-echo "Content-type: text/html"
 
 # Writing empty line
 echo ""
@@ -164,8 +160,8 @@ then
 
     if [[ $diktid != "" ]]; # If not empty
     then
-        url="http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/"$diktid
-        resp=$(curl -X GET "$url")
+        url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"$diktid
+        resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X GET "$url")
         #echo RESPONS GET: $resp
         debugtext+="<br/>"$resp
     fi
@@ -179,8 +175,8 @@ fi
 # Start ----------------------------------------------------------
 if [[ $todo = "Getall" ]]; # If todo = "Getall" - get all dikt
 then
-    url="http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/"
-    resp=$(curl --cookie "user_session=$current_cookie_id_value" -X GET "$url")
+    url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"
+    resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X GET "$url")
     debugtext+="<br/>"$resp
 fi
 
@@ -196,9 +192,9 @@ then
     dikttekstin=${input_value[1]} # dikttekst text
     dikttekst=$(urldecode "$dikttekstin") # Decoding string
 
-    url="http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/"
+    url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"
     data="<dikt><text>"$dikttekst"</text></dikt>"
-    resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url")
+    resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X POST --data "$data" "$url")
 
     debugtext+="<br/>"$resp
 fi
@@ -217,8 +213,8 @@ then
 
     if [[ $diktid != "" ]]; # If not empty
     then
-        url="http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/"$diktid
-        resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X DELETE "$url")
+        url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"$diktid
+        resp=$(curl --cookie "user_session=$current_cookie_id_value" -X DELETE "$url")
         debugtext+="<br/>Delete a dikt: "$resp
     fi
     if [[ $diktid = "" ]]; # If empty
@@ -232,8 +228,8 @@ fi
 # Start ----------------------------------------------------------
 if [[ $todo = "Deleteall" ]]; # If todo = Deleteall
 then
-        url="http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/"
-        resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X DELETE "$url")
+        url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"
+        resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X DELETE "$url")
         debugtext+="<br/>Deleteall: "$resp
 fi
 # End Deleteall ----------------------------------------------------------
@@ -254,9 +250,9 @@ then
     dikttekstin=${input_text_pair[1]} # dikttekst text
     dikt_text=$(urldecode "$dikttekstin") # Decoding string
 
-    url="http://172.17.0.2/cgi-bin/rest.py/diktbase/dikt/"$dikt_id
+    url="http://host.docker.internal:8080/cgi-bin/rest.sh/diktbase/dikt/"$dikt_id
     data="<dikt><text>"$dikt_text"</text></dikt>"
-    resp=$(curl -H "Accept: application/xml" -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X PUT --data "$data" "$url")
+    resp=$(curl -H "Accept: application/xml" --cookie "user_session=$current_cookie_id_value" -X PUT --data "$data" "$url")
 
     debugtext+="<br/>"$resp
 fi
@@ -264,7 +260,7 @@ fi
 
 
 # Writing status field
-echo '<h1>Gruppe 7 - dikteditor - v1.3</h1>'
+echo '<h1>Gruppe 7 - dikteditor - v1.3</h1>'$current_cookie_id_value
 echo '<a href="http://localhost:80/index.html">Gå til gruppas nettside</a>'
 echo '<div class="status-field">'
 echo Debug: $debugtext
@@ -308,6 +304,8 @@ fi
 # End logout form ---------------------------------------
 
 # Form: Create new dikt
+if [[ $loginstatus = "1" ]]; # If user logged in
+then
 cat << EOF
 <div class="form-div">
 <p>Lag nytt dikt</p>
@@ -318,8 +316,11 @@ cat << EOF
 </FORM>
 </div>
 EOF
+fi
 
 # Form: Change dikt
+if [[ $loginstatus = "1" ]]; # If user logged in
+then
 cat << EOF
 <div class="form-div">
 <p>Rediger dikt</p>
@@ -333,6 +334,7 @@ cat << EOF
 </FORM>
 </div>
 EOF
+fi
 
 # Form: Get dikt form
 cat << EOF
@@ -393,5 +395,6 @@ echo '</div>' # End forms div
 # Writing last part of html
 echo '</body>'
 echo '</html>'
+
 
 exit 0
