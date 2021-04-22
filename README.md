@@ -136,6 +136,10 @@ Oppsettet består av følgende deler:
     $sudo docker stats --no-stream
 
 ### CAPABILITIES
+
+    KJØRING AV CONTAINER MED CAP_DROP:
+    docker run -d --cap-drop=setfcap -m 512m -it -p 8080:80 --name g7alpine2 hkulterud/dockerhub:g7mp3_image
+
     Her kan tilgjengelige egenskaper fjernes og legges til, slik at man inni containeren får mer eller mindre funksjonalitet. Dette kan sjekkes med følgende kommandoer:
 
     sudo docker inspect --format='{{.HostConfig.CapAdd}}' g7alpine1
@@ -147,6 +151,25 @@ Oppsettet består av følgende deler:
     Tillegg: kan også default fjerne følgende: audit_write
 
 ### NAMESPACES
+    
+    STOP DOCKER
+    sudo systemctl stop docker
+
+    LAG BRUKER dockremapper:
+    sudo adduser dockremapper
+    
+    REMAP BRUKER - Start med namespaces tilgjengelig
+    sudo dockerd --userns-remap=default &
+    
+    Dette starter docker med dockermap user og group opprettes og mappes mot ikke-priviligerte uid og gid - "ranges" i /etc/subuid og /etc/subgid - filene.
+
+    Sjekk at bruker-navnerommet er riktig:
+    $docker info
+    
+    Docker Root Dir: /var/lib/docker/165536.165536 (eksempel) viser at det kjøres i et eget navnerom. Det vanlige root-dir er: Docker Root Dir: /var/lib/docker
+    
+    ---- Teori ----
+    
     For å gi root-brukeren i containeren mindre tilgang til vertssystemet/host, kan man mappe root i containeren til en annen bruker enn root i vertssystemet. Da vil root i containeren ikke ha tilgang til vertssystemet hvis noen skulle ta kontroll over brukeren i containeren.
 
     Før du setter opp namespaces, for å forstå:
