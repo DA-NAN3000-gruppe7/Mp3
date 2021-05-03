@@ -54,8 +54,11 @@ function checkLoggedIn() {
     fi
 }
 
+# Check and set is logged in
+checkLoggedIn
+
 # If request-method is POST
-if [[ $reqMethod = "DELETE" ]]; then
+if [[ $reqMethod = "DELETE" && $isLoggedIn = "1" ]]; then
     
     checkLoggedIn # Check loginstatus, set loginstatus variable
 
@@ -272,7 +275,7 @@ if [[ $reqMethod = "POST" ]]; then
 fi # End post
 
 # If request-method is PUT
-if [[ $reqMethod = "PUT" ]]; then
+if [[ $reqMethod = "PUT" && $isLoggedIn = "1" ]]; then
 
     checkLoggedIn
 
